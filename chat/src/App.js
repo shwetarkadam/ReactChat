@@ -1,37 +1,30 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
-
 import {useAuthState} from 'react-firebase-hooks/auth';
 import {useCollectionData} from 'react-firebase-hooks/firestore';
 import './App.css';
 import { useRef, useState } from 'react';
-firebase.initializeApp({
-  apiKey: "AIzaSyDPpkjYcvA7P3in8wexntxqEdMuHInFJQM",
-    authDomain: "reactchatapp-8bd09.firebaseapp.com",
-    projectId: "reactchatapp-8bd09",
-    storageBucket: "reactchatapp-8bd09.appspot.com",
-    messagingSenderId: "888041213724",
-    appId: "1:888041213724:web:e88cc3e5f603cf1c58b4d9",
-    measurementId: "G-YHB110VHDM"
-});
-
-const auth=firebase.auth();
-const firestore=firebase.firestore();
+import { ProSidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import ChatMessage from './components/ChatMessage';
+import ChatRoom from './components/ChatRoom';
+import {auth} from "./config.js";
+import {firestore} from "./config.js";
 
 function App() {
   
 const [user]=useAuthState(auth); //iifnull user signed out
-
+const[currentRoom,setCurrentRoom]=useState("General");
   return (
     <div className="App">
       <header>
       💬Shweta's Chat Room
+     
 <SignOut />
     </header>
-  
+
     <section>
-    {user?<ChatRoom />:<SignIn/>}
+    {user?<ChatRoom currentRoom={currentRoom}/>:<SignIn/>}
     </section>
     </div>
   );
@@ -58,62 +51,59 @@ function SignOut(){
 }
 
 
-function ChatRoom(){
-  const dummy=useRef();
-const messagesRef=firestore.collection("messsages");//reference firestore collection to db named messages
-//uery a subset of documents in collection
-//console.log(messagesRef);
-const uery=messagesRef.orderBy('createdAt').limit(50);
 
-//listen to datawith  hook
-const [messages]=useCollectionData(uery,{idField:'id'});
+const Rooms = ({ currentRoom, setShowListMenu, setCurrentRoom }) => {
+  const handleRoomChange = (room) => {
+    setCurrentRoom(room);
+    setShowListMenu(false);
+  };
+  return (
+    <div className="rooms">
+      <h2>Select room</h2>
+      <ul>
+        <li
+          onClick={() => {
+            handleRoomChange("HTML");
+          }}
+          className={currentRoom === "HTML" ? "active" : ""}
+        >
+          HTML
+        </li>
+        <li
+          onClick={() => {
+            handleRoomChange("CSS");
+          }}
+          className={currentRoom === "CSS" ? "active" : ""}
+        >
+          CSS
+        </li>
+        <li
+          onClick={() => {
+            handleRoomChange("General");
+          }}
+          className={currentRoom === "General" ? "active" : ""}
+        >
+          General
+        </li>
+        <li
+          onClick={() => {
+            handleRoomChange("ReactJs");
+          }}
+          className={currentRoom === "ReactJs" ? "active" : ""}
+        >
+          ReactJs
+        </li>
+        <li
+          onClick={() => {
+            handleRoomChange("JavaScript");
+          }}
+          className={currentRoom === "JavaScript" ? "active" : ""}
+        >
+          JavaScript
+        </li>
+      </ul>
+    </div>
+  );
+};
 
-const [formValue,setFromValue]=useState('');
-//console.log(messages);
-const sendMessage=async(e)=>{
-  console.log("fomrvaue="+formValue.trim().length);
-
-  e.preventDefault();
-  if(formValue.trim().length>0){
-  const {uid,photoURL}=auth.currentUser;
-  //create new document in firestoe
-  await messagesRef.add({
-    text:formValue,
-    createdAt:firebase.firestore.FieldValue.serverTimestamp(),
-    uid,
-    photoURL
-  });
-  }
-  setFromValue('');//reset the form to empty
-  dummy.current.scrollIntoView({behaviour:'smooth'});
-
-}
-return(
-  <div>
-    <main>
-    {messages && messages.map(msg=> <ChatMessage key={msg.id} message={msg}/>)}
-    <div  ref={dummy}></div>
-    </main>
-    
-  <form>
-    {/* bind state to form input */}
-    <input  value={formValue} onChange={(e)=>setFromValue(e.target.value)}/>
-    <button type="submit" onClick={sendMessage}>✔️</button>
-  </form>
-  </div>
-)
-
-}
-
-
-function ChatMessage(props){
-  const {text,uid,photoURL}=props.message;
-  //comparing userid on te firestore doc with current logged in user
-  const messageClass=uid===auth.currentUser.uid ?'sent':'received';
-//  console.log(text)
-   return(<div className={  `message ${messageClass}`}>
-<img src={photoURL}  />
-     <p>{text}</p>
-   </div>)
-}
 export default App;
