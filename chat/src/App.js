@@ -10,18 +10,34 @@ import ChatMessage from './components/ChatMessage';
 import ChatRoom from './components/ChatRoom';
 import {auth} from "./config.js";
 import {firestore} from "./config.js";
+import SignOut from './components/SignOut';
+import SideNavBar from "./components/SideNavBar";
 
 function App() {
-  
+ 
 const [user]=useAuthState(auth); //iifnull user signed out
 const[currentRoom,setCurrentRoom]=useState("General");
+const [showListMenu, setShowListMenu] = useState(false);
   return (
     <div className="App">
+      
       <header>
-      💬Shweta's Chat Room
      
-<SignOut />
+      <SideNavBar  user={user}
+        currentRoom={currentRoom}
+        setCurrentRoom={setCurrentRoom}  />
+     
+
+     
+      <SignOut setShowListMenu={setShowListMenu} />
     </header>
+      {/* <Rooms
+                currentRoom={currentRoom}
+                setCurrentRoom={setCurrentRoom}
+                setShowListMenu={setShowListMenu}
+              /> */}
+
+    
 
     <section>
     {user?<ChatRoom currentRoom={currentRoom}/>:<SignIn/>}
@@ -44,66 +60,13 @@ return(
 
 
 
-function SignOut(){
-  return auth.currentUser &&(
-    <button onClick={()=>auth.signOut()}>Sign Out</button>
-  )
-}
+// function SignOut(){
+//   return auth.currentUser &&(
+//     <button onClick={()=>auth.signOut()}>Sign Out</button>
+//   )
+// }
 
 
 
-const Rooms = ({ currentRoom, setShowListMenu, setCurrentRoom }) => {
-  const handleRoomChange = (room) => {
-    setCurrentRoom(room);
-    setShowListMenu(false);
-  };
-  return (
-    <div className="rooms">
-      <h2>Select room</h2>
-      <ul>
-        <li
-          onClick={() => {
-            handleRoomChange("HTML");
-          }}
-          className={currentRoom === "HTML" ? "active" : ""}
-        >
-          HTML
-        </li>
-        <li
-          onClick={() => {
-            handleRoomChange("CSS");
-          }}
-          className={currentRoom === "CSS" ? "active" : ""}
-        >
-          CSS
-        </li>
-        <li
-          onClick={() => {
-            handleRoomChange("General");
-          }}
-          className={currentRoom === "General" ? "active" : ""}
-        >
-          General
-        </li>
-        <li
-          onClick={() => {
-            handleRoomChange("ReactJs");
-          }}
-          className={currentRoom === "ReactJs" ? "active" : ""}
-        >
-          ReactJs
-        </li>
-        <li
-          onClick={() => {
-            handleRoomChange("JavaScript");
-          }}
-          className={currentRoom === "JavaScript" ? "active" : ""}
-        >
-          JavaScript
-        </li>
-      </ul>
-    </div>
-  );
-};
 
 export default App;

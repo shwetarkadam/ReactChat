@@ -9,14 +9,14 @@ import {useCollectionData} from 'react-firebase-hooks/firestore';
 import { useRef, useState } from 'react';
 import ChatMessage  from './ChatMessage';
 function ChatRoom({currentRoom}){
-    currentRoom="Private"
+    
       //console.log(currentRoom);
       const dummy=useRef();
      
     const messagesRef=firestore.collection("messsages");//reference firestore collection to db named messages
     //uery a subset of documents in collection
     let uery=messagesRef
-    .where("room","==","Private")
+    .where("room","==",currentRoom)
     .orderBy('createdAt')
     .limit(50);
     //listen to datawith  hook

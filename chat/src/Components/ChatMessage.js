@@ -13,8 +13,8 @@ function ChatMessage(props){
    console.log("room="+room);
      return(<div className={  `message ${messageClass}`}>
   <img src={photoURL}  />
-  <div>{displayName}</div>
-       <p>{text}</p>
+
+       <p><div className="display-name">{displayName}</div>{text}</p>
      </div>)
   }
 
